@@ -4,9 +4,9 @@ import com.example.insuranceAssist.dto.UserDetailsResponseDTO;
 import com.example.insuranceAssist.dto.UserDetailsUpdateRequestDTO;
 import com.example.insuranceAssist.exception.UserNotFoundException;
 import com.example.insuranceAssist.service.ProfileService;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,16 +21,20 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
+    @PreAuthorize("hasAnyRole('CLIENT','AGENT')")
     @GetMapping("/get/{userId}")
-    public ResponseEntity<UserDetailsResponseDTO> getDetails(@PathVariable UUID userId) throws UserNotFoundException {
+    public ResponseEntity<UserDetailsResponseDTO> getDetails(@PathVariable UUID userId)
+            throws UserNotFoundException {
         UserDetailsResponseDTO response = profileService.getDetails(userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('CLIENT','AGENT')")
     @PutMapping("/update/{userId}")
-    public ResponseEntity<UserDetailsResponseDTO> updateDetails(@PathVariable UUID userId, @RequestBody UserDetailsUpdateRequestDTO request) throws UserNotFoundException {
+    public ResponseEntity<UserDetailsResponseDTO> updateDetails(
+            @PathVariable UUID userId, @RequestBody UserDetailsUpdateRequestDTO request)
+            throws UserNotFoundException {
         UserDetailsResponseDTO response = profileService.updateDetails(userId, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }
